@@ -1,4 +1,4 @@
-# model settings
+# num_classes settings
 model = dict(
     type='FastRCNN',
     pretrained='torchvision://resnet50',
@@ -25,7 +25,7 @@ model = dict(
         in_channels=256,
         fc_out_channels=1024,
         roi_feat_size=7,
-        num_classes=81,
+        num_classes=8, ##num_classes=81,
         target_means=[0., 0., 0., 0.],
         target_stds=[0.1, 0.1, 0.2, 0.2],
         reg_class_agnostic=False,
