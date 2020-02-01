@@ -29,23 +29,23 @@ def main():
     #json.dump(gen_instance(data_src, "train"), open(os.path.join(data_dst,"annotations", "instances_train2017.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     #json.dump(gen_instance(data_src, "val"), open(os.path.join(data_dst,"annotations", "instances_val2017.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
-    ## copy the images to the train2017 and val2017
-    # folders = os.listdir(data_src)
-    # folders.sort()
-    # for folder in folders:
-    #     print("%s..."%folder)
-    #     with open(os.path.join(data_src,folder,"ImageSets", "Main", "train.txt"), "r") as f:
-    #         samples = f.readlines()
-    #         for sample in samples:
-    #             sample = sample[: -1]
-    #             shutil.copyfile(os.path.join(data_src, folder, "JPEGImages", sample+".jpg"),
-    #                             os.path.join(data_dst, "train2017", sample+".jpg"))
-    #     with open(os.path.join(data_src,folder,"ImageSets", "Main", "val.txt"), "r") as f:
-    #         samples = f.readlines()
-    #         for sample in samples:
-    #             sample = sample[: -1]
-    #             shutil.copyfile(os.path.join(data_src, folder, "JPEGImages", sample + ".jpg"),
-    #                             os.path.join(data_dst, "val2017", sample + ".jpg"))
+    # copy the images to the train2017 and val2017
+    folders = os.listdir(data_src)
+    folders.sort()
+    for folder in folders:
+        print("%s..."%folder)
+        with open(os.path.join(data_src,folder,"ImageSets", "Main", "train.txt"), "r") as f:
+            samples = f.readlines()
+            for sample in samples:
+                sample = sample[: -1]
+                shutil.copyfile(os.path.join(data_src, folder, "JPEGImages", sample+".jpg"),
+                                os.path.join(data_dst, "train2017", sample+".jpg"))
+        with open(os.path.join(data_src,folder,"ImageSets", "Main", "val.txt"), "r") as f:
+            samples = f.readlines()
+            for sample in samples:
+                sample = sample[: -1]
+                shutil.copyfile(os.path.join(data_src, folder, "JPEGImages", sample + ".jpg"),
+                                os.path.join(data_dst, "val2017", sample + ".jpg"))
 
 
 def gen_instance(dir, type):
