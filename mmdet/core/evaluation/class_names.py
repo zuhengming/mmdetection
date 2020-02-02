@@ -81,15 +81,15 @@ def imagenet_vid_classes():
 #         'scissors', 'teddy_bear', 'hair_drier', 'toothbrush'
 #     ]
 
-# def coco_classes(): ## my dataset
-#     return [
-#         'D00', 'D01', 'D10', 'D11', 'D20', 'D40', 'D43', 'D44'
-#     ]
-
 def coco_classes(): ## my dataset
     return [
-        'head'
+        'D00', 'D01', 'D10', 'D11', 'D20', 'D40', 'D43', 'D44'
     ]
+
+# def coco_classes(): ## my dataset
+#     return [
+#         'head'
+#     ]
 
 def cityscapes_classes():
     return [
