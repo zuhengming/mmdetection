@@ -348,7 +348,15 @@ Please refer to [ROBUSTNESS_BENCHMARKING.md](ROBUSTNESS_BENCHMARKING.md).
 ## How-to
 
 ### Use my own datasets
-
+******************
+This is the method provided by https://blog.csdn.net/gaoyi135/article/details/90613895
+To use own datasets:
+1) change your dataset to the coco format;  
+2) change the softlink coco to your own dataset in mmdetection/data/
+3) modify 'classes' in mmdetection/mmdet/datasets/coco.py to your own classes;  
+4) modify 'coco_classes' in mmdetection/mmdet/core/evaluation/class_names.py to your own classes;
+5) modify 'num_classes', 'img_scale', 'lr' in config file, e.g. configs/faster_rcnn_r50_fpn_1x.py to the information of your own classes.  
+******************
 The simplest way is to convert your dataset to existing dataset formats (COCO or PASCAL VOC).
 
 Here we show an example of adding a custom dataset of 5 classes, assuming it is also in COCO format.
