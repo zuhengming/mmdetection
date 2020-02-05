@@ -16,12 +16,17 @@ from mmdet.models import build_detector
 from mmdet.utils import get_root_logger
 
 
+# os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"]="1"
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
     parser.add_argument('config', help='train config file path')
     parser.add_argument('--work_dir', help='the dir to save logs and models')
     parser.add_argument(
         '--resume_from', help='the checkpoint file to resume from')
+    parser.add_argument(
+        '--load_from', help='the checkpoint file to resume from')
     parser.add_argument(
         '--validate',
         action='store_true',
@@ -66,6 +71,8 @@ def main():
         cfg.work_dir = args.work_dir
     if args.resume_from is not None:
         cfg.resume_from = args.resume_from
+    if args.load_from is not None:
+        cfg.load_from = args.load_from
     cfg.gpus = args.gpus
 
     if args.autoscale_lr:

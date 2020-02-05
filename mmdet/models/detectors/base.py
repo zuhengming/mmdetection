@@ -138,7 +138,7 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
         else:
             return self.forward_test(img, img_meta, **kwargs)
 
-    def show_result(self, data, result, dataset=None, score_thr=0.3):
+    def show_result(self, data, result, dataset=None, score_thr=0.3, out_file=None):
         if isinstance(result, tuple):
             bbox_result, segm_result = result
         else:
@@ -180,6 +180,7 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
                 for i, bbox in enumerate(bbox_result)
             ]
             labels = np.concatenate(labels)
+            # img_name = str.split(img_metas[0]['filename'], '/')[-1]
             mmcv.imshow_det_bboxes(
                 img_show,
                 bboxes,
