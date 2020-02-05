@@ -9,6 +9,7 @@
 - NCCL 2
 - GCC 4.9 or higher
 - [mmcv](https://github.com/open-mmlab/mmcv)
+- numpy 1.17 (if >=1.18 in cocoeval.py:  np.linspace(.5, 0.95, np.round((0.95 - .5) / .05) + 1, endpoint=True) has error 'numpy.float64' object cannot be interpreted as an integer )
 
 We have tested the following versions of OS and softwares:
 
