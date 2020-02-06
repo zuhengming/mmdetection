@@ -15,7 +15,7 @@ data_dst = "/data/zming/GH/fisheye_detect/videos/fullannotation_3videos_clean_co
 data_src = "/data/zming/GH/fisheye_detect/videos/fullannotation_3videos_clean"
 nfold = 10
 ifold = 0
-img_size = 500
+
 
 def main():
 
@@ -93,6 +93,8 @@ def main():
 
 def gen_instance(dir, dir_imgs):
     ## convert the annotations to coco format
+    dir_dst = str.split(dir_imgs, '/')[-2]
+    img_size = int(str.split(dir_dst, '_')[-1])
     images = []
     annotations = []
     img_h = img_size#3000
@@ -145,7 +147,7 @@ def gen_instance(dir, dir_imgs):
                 min_y = max(0.0, ymin)
                 max_x = min(xmin+x_len, img_w)
                 max_y = min(ymin+y_len, img_h)
-
+                area = int(x_len*y_len)
                 ## draw the bbox ground truth
                 # cv2.rectangle(im, (int(min_x), int(min_y)), (int(max_x), int(max_y)), (0, 255, 0), 2)
 
@@ -158,15 +160,15 @@ def gen_instance(dir, dir_imgs):
                 annotation["segmentation"] = [[min_x,min_y, min_x,min_y+0.5*img_h, min_x,max_y, min_x+0.5*img_w,max_y, max_x,max_y, max_x,max_y-0.5*img_h, max_x,min_y, max_x-0.5*img_w,min_y]]
                 annotation["bbox"] = [min_x,min_y,x_len,y_len]
                 annotation["iscrowd"] = 0
-                annotation["area"] = 1.0
+                annotation["area"] = area
                 annotations.append(annotation)
 
                 ann_id += 1
 
             img_id += 1
 
-            cv2.imshow('im', im)
-            cv2.waitKey(0)
+            # cv2.imshow('im', im)
+            # cv2.waitKey(0)
 
     instance = {}
     instance["info"] = "fisheye head detect dataset Challenge 2018"
