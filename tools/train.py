@@ -15,6 +15,9 @@ from mmdet.datasets import build_dataset
 from mmdet.models import build_detector
 
 
+# os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"]="1"
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
     parser.add_argument('config', help='train config file path')

@@ -26,8 +26,7 @@ def main():
 
     json.dump(gen_instance(data_src, "train"), open(os.path.join(data_dst,"annotations", "instances_train2017.json"), "w"))
     json.dump(gen_instance(data_src, "val"), open(os.path.join(data_dst,"annotations", "instances_val2017.json"), "w"))
-    #json.dump(gen_instance(data_src, "train"), open(os.path.join(data_dst,"annotations", "instances_train2017.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    #json.dump(gen_instance(data_src, "val"), open(os.path.join(data_dst,"annotations", "instances_val2017.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+
 
     # copy the images to the train2017 and val2017
     folders = os.listdir(data_src)
@@ -63,7 +62,7 @@ def gen_instance(dir, type):
         with open(os.path.join(dir,folder,"ImageSets", "Main", "%s.txt"%type), "r") as f:
             samples = f.readlines()
         files = glob.glob(os.path.join(dir, folder, "labels", "%s_*.txt" % folder))
-        for file in files:
+        for file in files: ##
             file_name = str.split(file,"/")[-1]
             img_name = str.split(file_name,".")[0]+"\n"
             if img_name == 'Numazu_20170906095338\n':
@@ -96,6 +95,7 @@ def gen_instance(dir, type):
                     min_y = max(0.0, ymin)
                     max_x = min(xmax, img_w)
                     max_y = min(ymax, img_h)
+                    area = int(x_len*y_len)
 
                     annotation = {}
                     annotation["id"] = ann_id
@@ -104,7 +104,7 @@ def gen_instance(dir, type):
                     annotation["segmentation"] = [[min_x,min_y, min_x,min_y+0.5*img_h, min_x,max_y, min_x+0.5*img_w,max_y, max_x,max_y, max_x,max_y-0.5*img_h, max_x,min_y, max_x-0.5*img_w,min_y]]
                     annotation["bbox"] = [min_x,min_y,x_len,y_len]
                     annotation["iscrowd"] = 0
-                    annotation["area"] = 1.0
+                    annotation["area"] = area
                     annotations.append(annotation)
 
                     ann_id += 1

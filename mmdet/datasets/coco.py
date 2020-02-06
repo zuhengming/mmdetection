@@ -8,8 +8,10 @@ from .registry import DATASETS
 @DATASETS.register_module
 class CocoDataset(CustomDataset):
     ## my dataset
+
     # CLASSES = ('head')
     CLASSES = ('D00','D01','D10','D11','D20','D40','D43','D44')
+
 
     # CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
     #            'train', 'truck', 'boat', 'traffic_light', 'fire_hydrant',

@@ -11,10 +11,11 @@ import json
 import numpy as np
 from sklearn.model_selection import KFold
 
-data_dst = "/data/zming/GH/fisheye_detect/videos/fullannotation_3videos_clean_coco"
+data_dst = "/data/zming/GH/fisheye_detect/videos/fullannotation_3videos_clean_coco_500"
 data_src = "/data/zming/GH/fisheye_detect/videos/fullannotation_3videos_clean"
 nfold = 10
 ifold = 0
+img_size = 500
 
 def main():
 
@@ -27,10 +28,6 @@ def main():
     if not os.path.isdir(os.path.join(data_dst,"test2017")):
         os.mkdir(os.path.join(data_dst,"test2017"))
 
-    json.dump(gen_instance(data_src, os.path.join(data_dst, "train2017")), open(os.path.join(data_dst,"annotations", "instances_train2017.json"), "w"))
-    json.dump(gen_instance(data_src, os.path.join(data_dst, "val2017")), open(os.path.join(data_dst,"annotations", "instances_val2017.json"), "w"))
-    #json.dump(gen_instance(data_src, "train"), open(os.path.join(data_dst,"annotations", "instances_train2017.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    #json.dump(gen_instance(data_src, "val"), open(os.path.join(data_dst,"annotations", "instances_val2017.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
     # # copy the images to the train2017 and val2017
     # folders = os.listdir(data_src)
@@ -67,30 +64,58 @@ def main():
     #     sample = str.split(image, '/')[-2:]
     #     sample = sample[0]+'_'+ sample[1]
     #     sample = sample[:-4]
-    #     shutil.copyfile(image,
-    #                     os.path.join(data_dst, "train2017", sample+".jpg"))
+    #
+    #     img = cv2.imread(image)
+    #     img = cv2.resize(img, (img_size, img_size), interpolation=cv2.INTER_AREA)
+    #     cv2.imwrite(os.path.join(data_dst, "train2017", sample+".jpg"), img)
+    #
+    #     # shutil.copyfile(image,
+    #     #                 os.path.join(data_dst, "train2017", sample+".jpg"))
     # for image in images_val:
     #     print("%s..."%image)
     #     sample = str.split(image, '/')[-2:]
     #     sample = sample[0]+'_'+ sample[1]
     #     sample = sample[:-4]
-    #     shutil.copyfile(image,
-    #                     os.path.join(data_dst, "val2017", sample+".jpg"))
+    #     img = cv2.imread(image)
+    #     img = cv2.resize(img, (img_size, img_size), interpolation=cv2.INTER_AREA)
+    #     cv2.imwrite(os.path.join(data_dst, "val2017", sample + ".jpg"), img)
+    #
+    #     # shutil.copyfile(image,
+    #     #                 os.path.join(data_dst, "val2017", sample+".jpg"))
 
+    json.dump(gen_instance(data_src, os.path.join(data_dst, "train2017")),
+              open(os.path.join(data_dst, "annotations", "instances_train2017.json"), "w"))
+    json.dump(gen_instance(data_src, os.path.join(data_dst, "val2017")),
+              open(os.path.join(data_dst, "annotations", "instances_val2017.json"), "w"))
+    # json.dump(gen_instance(data_src, "train"), open(os.path.join(data_dst,"annotations", "instances_train2017.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    # json.dump(gen_instance(data_src, "val"), open(os.path.join(data_dst,"annotations", "instances_val2017.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
 def gen_instance(dir, dir_imgs):
     ## convert the annotations to coco format
     images = []
     annotations = []
-    img_h = 3000
-    img_w = 3000
+    img_h = img_size#3000
+    img_w = img_size#3000
     img_id = 0
     ann_id = 0
     imgs = glob.glob(os.path.join(dir_imgs, '*.jpg'))
 
+    ## read the original image size
+    img = imgs[0]
+    img = str.split(img, '/')[-1]
+    idx = len(img) - img[::-1].index('_') - 1
+    img_name = img[idx + 1:]
+    folder = img[:idx]
+    image_original = cv2.imread(os.path.join(dir, folder, img_name[:-3] + 'png'))
+    img_h_original, img_w_original, _ = image_original.shape
+    resize_scale_h = img_h_original / img_h
+    resize_scale_w = img_w_original / img_w
+    # img_resize = cv2.resize(image_original, (img_size, img_size), interpolation=cv2.INTER_AREA)
+
     for img in imgs:
         print("%s" % img)
+        # im = cv2.imread(img)
         img = str.split(img, '/')[-1]
         idx = len(img)-img[::-1].index('_')-1
         img_name = img[idx+1:]
@@ -103,13 +128,16 @@ def gen_instance(dir, dir_imgs):
             image["id"] = img_id
             image["file_name"] = img
             images.append(image)
+
             for line in f.readlines():
                 [xmin, ymin, x_len, y_len, label] = str.split(line, " ")
-                xmin = float(xmin)
-                ymin = float(ymin)
-                x_len = float(x_len)
-                y_len = float(y_len)
+                xmin = float(xmin)/resize_scale_w
+                ymin = float(ymin)/resize_scale_h
+                x_len = float(x_len)/resize_scale_w
+                y_len = float(y_len)/resize_scale_h
+
                 label = int(label)
+                #print('%d'%label)
                 if label < 0 or label >0:
                     print('%s'%img_name)
 
@@ -117,6 +145,11 @@ def gen_instance(dir, dir_imgs):
                 min_y = max(0.0, ymin)
                 max_x = min(xmin+x_len, img_w)
                 max_y = min(ymin+y_len, img_h)
+
+                ## draw the bbox ground truth
+                # cv2.rectangle(im, (int(min_x), int(min_y)), (int(max_x), int(max_y)), (0, 255, 0), 2)
+
+
 
                 annotation = {}
                 annotation["id"] = ann_id
@@ -131,6 +164,9 @@ def gen_instance(dir, dir_imgs):
                 ann_id += 1
 
             img_id += 1
+
+            cv2.imshow('im', im)
+            cv2.waitKey(0)
 
     instance = {}
     instance["info"] = "fisheye head detect dataset Challenge 2018"

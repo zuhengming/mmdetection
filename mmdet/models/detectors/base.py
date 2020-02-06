@@ -4,6 +4,7 @@ import mmcv
 import numpy as np
 import pycocotools.mask as maskUtils
 import torch.nn as nn
+import os
 
 from mmdet.core import auto_fp16, get_classes, tensor2imgs
 
@@ -139,7 +140,7 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
         else:
             return self.forward_test(img, img_meta, **kwargs)
 
-    def show_result(self, data, result, dataset=None, score_thr=0.3):
+    def show_result(self, data, result, dataset=None, score_thr=0.3, out_file=None, show=False):
         if isinstance(result, tuple):
             bbox_result, segm_result = result
         else:
@@ -181,9 +182,13 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
                 for i, bbox in enumerate(bbox_result)
             ]
             labels = np.concatenate(labels)
+            img_name = str.split(img_metas[0]['filename'], '/')[-1]
+            out_file = os.path.join(out_file, img_name)
             mmcv.imshow_det_bboxes(
                 img_show,
                 bboxes,
                 labels,
                 class_names=class_names,
-                score_thr=score_thr)
+                score_thr=score_thr,
+                out_file = out_file,
+                show=show)

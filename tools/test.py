@@ -16,22 +16,27 @@ from mmdet.datasets import build_dataloader, build_dataset
 from mmdet.models import build_detector
 
 
-def single_gpu_test(model, data_loader, show=False):
+def single_gpu_test(model, data_loader, show=False, out_imgfiles=None):
     model.eval()
     results = []
     dataset = data_loader.dataset
     prog_bar = mmcv.ProgressBar(len(dataset))
     for i, data in enumerate(data_loader):
+        # imgname= data['img_meta'][0].data[0][0]['filename']
+        # print('\n%s'%imgname)
         with torch.no_grad():
             result = model(return_loss=False, rescale=not show, **data)
         results.append(result)
 
-        if show:
-            model.module.show_result(data, result)
+        if show or out_imgfiles:
+            model.module.show_result(data, result, show=show, out_file=out_imgfiles)
+        # if show:
+        #     model.module.show_result(data, result)
 
         batch_size = data['img'][0].size(0)
         for _ in range(batch_size):
             prog_bar.update()
+    print('finish')
     return results
 
 
@@ -158,6 +163,7 @@ def parse_args():
     parser.add_argument('config', help='test config file path')
     parser.add_argument('checkpoint', help='checkpoint file')
     parser.add_argument('--out', help='output result file')
+    parser.add_argument('--out_imgfiles', help='output result images')
     parser.add_argument(
         '--json_out',
         help='output result file name without extension',
@@ -219,7 +225,7 @@ def main():
     data_loader = build_dataloader(
         dataset,
         imgs_per_gpu=1,
-        workers_per_gpu=cfg.data.workers_per_gpu,
+        workers_per_gpu=1, #cfg.data.workers_per_gpu,
         dist=distributed,
         shuffle=False)
 
@@ -238,7 +244,7 @@ def main():
 
     if not distributed:
         model = MMDataParallel(model, device_ids=[0])
-        outputs = single_gpu_test(model, data_loader, args.show)
+        outputs = single_gpu_test(model, data_loader, args.show, args.out_imgfiles)
     else:
         model = MMDistributedDataParallel(model.cuda())
         outputs = multi_gpu_test(model, data_loader, args.tmpdir,
