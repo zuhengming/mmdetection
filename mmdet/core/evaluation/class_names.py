@@ -83,11 +83,14 @@ def imagenet_vid_classes():
 
 
 
+
 def coco_classes(): ## my dataset fisheye head detection
 
     return [
         'D00', 'D01', 'D10', 'D11', 'D20', 'D40', 'D43', 'D44'
     ]
+
+
 
 # def coco_classes(): ## my dataset
 #     return [
